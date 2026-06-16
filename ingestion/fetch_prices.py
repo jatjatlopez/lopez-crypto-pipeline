@@ -68,8 +68,36 @@ COIN_IDS = "bitcoin,ethereum,solana,ripple,hyperliquid"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data" / "prices"          # where price JSON files go
 STATE_FILE = PROJECT_ROOT / "ingestion" / "state.json"  # shared with sentiment script
+print(STATE_FILE)
 
+# ------------------------------------------------------------
+# PHASE 2: HIVE PARTITIONS — folder path by year/month/day/hour
+# ------------------------------------------------------------
+# WHY "year=2026" and not just "2026"?
+#   Spark, Databricks, and AWS Athena recognize key=value folders as PARTITIONS.
+#   Query "hour=04" → they skip all other hours (fast + cheap).
+#
+# WHY always "data.json" as the filename?
+#   The FOLDER path carries the time. Filename stays constant.
+#   Running twice in the same hour OVERWRITES that hour's snapshot (correct for hourly jobs).
 
+def build_partition_path(base_dir, run_time):
+    """
+    Build: base_dir/year=YYYY/month=MM/day=DD/hour=HH/data.json
+
+    base_dir  → DATA_DIR, NEWS_DIR, or FEAR_GREED_DIR
+    run_time  → UTC datetime from main()
+    """
+    partition_dir = (
+        base_dir
+        / f"year={run_time.year}"
+        / f"month={run_time.month:02d}"   # :02d pads 6 → "06" (sorts correctly)
+        / f"day={run_time.day:02d}"
+        / f"hour={run_time.hour:02d}"
+    )
+    partition_dir.mkdir(parents=True, exist_ok=True)  # create folders if missing
+    return partition_dir / "data.json"
+    
 # ------------------------------------------------------------
 # STATE HELPERS — read/write ingestion/state.json
 # ------------------------------------------------------------
