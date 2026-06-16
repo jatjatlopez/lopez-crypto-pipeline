@@ -97,7 +97,8 @@ def build_partition_path(base_dir, run_time):
     )
     partition_dir.mkdir(parents=True, exist_ok=True)  # create folders if missing
     return partition_dir / "data.json"
-    
+
+
 # ------------------------------------------------------------
 # STATE HELPERS — read/write ingestion/state.json
 # ------------------------------------------------------------
@@ -165,13 +166,9 @@ def save_raw_json(records, run_time):
         - the actual API response       → records
       This is a data-engineering best practice called "raw landing with metadata."
     """
-    # mkdir(parents=True) → create folder if missing; exist_ok=True → no error if exists
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Unique filename per run so files don't overwrite each other (for now).
-    # Phase 2 will switch to hive folders: year=2026/month=06/day=16/hour=03/data.json
-    filename = run_time.strftime("%Y%m%d_%H%M%S") + ".json"
-    filepath = DATA_DIR / filename
+    
+    # Phase 2: hive-style path instead of flat timestamp filename
+    filepath = build_partition_path(DATA_DIR, run_time)
 
     payload = {
         "ingested_at": run_time.isoformat(),  # ISO format: 2026-06-16T03:48:55+00:00
