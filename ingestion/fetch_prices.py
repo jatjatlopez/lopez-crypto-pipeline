@@ -27,6 +27,8 @@ from pathlib import Path                 # clean way to build file paths
 import requests      # send HTTP requests to APIs (like a browser, but in code)
 from dotenv import load_dotenv  # read secrets from your .env file
 
+from s3_upload import upload_to_s3
+
 
 # ------------------------------------------------------------
 # STEP 1: LOAD SECRETS FROM .env
@@ -198,6 +200,9 @@ def main():
     # --- Step B: save to disk ---
     filepath = save_raw_json(records, run_time)
     print(f"Saved {len(records)} coins to {filepath}")
+
+    # Upload same file to S3 (same hive path, different destination)
+    upload_to_s3(filepath, s3_prefix="prices")
 
     # --- Step C: update state ONLY after save succeeded ---
     # CRITICAL: this block MUST stay INSIDE main().

@@ -30,6 +30,8 @@ from pathlib import Path                 # file paths
 
 import requests      # HTTP calls to APIs
 
+from s3_upload import upload_to_s3
+
 # NOTE: no dotenv here — both sentiment APIs are free with NO API key needed.
 
 
@@ -196,6 +198,10 @@ def main():
 
     print(f"Saved fear/greed to {fg_path}")
     print(f"Saved news to {news_path}")
+
+    # Upload both to S3
+    upload_to_s3(fg_path, s3_prefix="fear_greed")
+    upload_to_s3(news_path, s3_prefix="news")
 
     # --- Step C: update state AFTER both saves succeeded ---
     # MUST stay INSIDE main() — run_time only exists in this function.
