@@ -1,0 +1,36 @@
+# ============================================================
+# docker-compose.yml
+# ============================================================
+# WHAT THIS IS:
+#   Defines HOW to run your Docker container.
+#   Handles env vars, folder mounting, and run settings.
+#
+# HOW TO RUN:
+#   docker-compose up          (run once, see output)
+#   docker-compose up --build  (rebuild image first, then run)
+# ============================================================
+
+version: "3.8"
+
+services:
+  ingestion:
+    # "build: ." = look for Dockerfile in current folder and build it
+    build: .
+
+    # Name the container so it's easy to identify in Docker Desktop
+    container_name: crypto-ingestion
+
+    # Pass your .env file into the container as environment variables
+    # WHY: we don't COPY .env into the image (security).
+    # Instead we inject it at runtime only.
+    env_file:
+      - .env
+
+    # Mount your local data/ folder into the container at /app/data
+    # WHY: containers are temporary. Without this, saved JSON files
+    # disappear when the container stops. This "volume" bridges them.
+    #
+    # Format: "local_path:container_path"
+    volumes:
+      - ./data:/app/data
+      - ./ingestion/state.json:/app/ingestion/state.json

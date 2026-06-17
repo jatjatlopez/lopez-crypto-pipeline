@@ -1,7 +1,7 @@
 venv/
-.env
-api_keys.txt
 data/
 __pycache__/
 *.pyc
-state.json
+.env
+.git/
+*.json
