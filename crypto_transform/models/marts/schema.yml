@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: mart_price_sentiment
+    description: "Final fact table joining crypto prices with fear & greed sentiment scores."
+    columns:
+      - name: coin_id
+        description: "Unique identifier for the coin (e.g. bitcoin, ethereum)"
+        tests:
+          - not_null
+      - name: current_price
+        description: "Current price in USD at time of ingestion"
+        tests:
+          - not_null
+      - name: fear_greed_value
+        description: "Fear & Greed Index value (0=Extreme Fear, 100=Extreme Greed)"
+      - name: ingestion_hour
+        description: "Truncated timestamp to the hour — used as the join key"
+        tests:
+          - not_null
+
+  - name: mart_volatility_summary
+    description: "Aggregated summary of price volatility grouped by sentiment classification."
+    columns:
+      - name: value_classification
+        description: "Sentiment label: Extreme Fear, Fear, Greed, Extreme Greed"
+        tests:
+          - not_null
+      - name: total_readings
+        description: "Number of coin readings in this sentiment bucket"
+        tests:
+          - not_null

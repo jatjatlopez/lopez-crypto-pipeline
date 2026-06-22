@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: gold
+    catalog: workspace
+    schema: default
+    tables:
+      - name: gold_price_sentiment
+        description: "Gold layer Delta table produced by the Databricks Gold notebook."
