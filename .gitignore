@@ -1,4 +1,6 @@
 venv/
+venv-dbt/
+logs/
 .env
 api_keys.txt
 data/
