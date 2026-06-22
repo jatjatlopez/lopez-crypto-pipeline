@@ -1,0 +1,77 @@
+from datetime import datetime, timedelta
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+from airflow.providers.databricks.operators.databricks import DatabricksSubmitRunOperator
+
+default_args = {
+    "owner": "airflow",
+    "retries": 1,
+    "retry_delay": timedelta(minutes=5),
+}
+
+DATABRICKS_CONN_ID = "databricks_default"
+
+with DAG(
+    dag_id="crypto_pipeline",
+    description="Fetch crypto data, upload to S3, trigger Databricks lakehouse",
+    default_args=default_args,
+    start_date=datetime(2026, 6, 22),
+    schedule_interval="@hourly",
+    catchup=False,
+    tags=["crypto", "ingestion", "databricks"],
+) as dag:
+
+    fetch_prices = BashOperator(
+        task_id="fetch_prices",
+        bash_command="cd /opt/airflow/ingestion && pip install -q -r /opt/airflow/ingestion/../requirements.txt && python fetch_prices.py",
+    )
+
+    fetch_sentiment = BashOperator(
+        task_id="fetch_sentiment",
+        bash_command="cd /opt/airflow/ingestion && python fetch_sentiment.py",
+    )
+
+    run_bronze = DatabricksSubmitRunOperator(
+        task_id="run_bronze_notebook",
+        databricks_conn_id=DATABRICKS_CONN_ID,
+        existing_cluster_id=None,
+        notebook_task={
+            "notebook_path": "/Workspace/Users/01_bronze",
+        },
+        new_cluster={
+            "spark_version": "15.4.x-scala2.12",
+            "node_type_id": "Standard_DS3_v2",
+            "num_workers": 1,
+        },
+    )
+
+    run_silver = DatabricksSubmitRunOperator(
+        task_id="run_silver_notebook",
+        databricks_conn_id=DATABRICKS_CONN_ID,
+        existing_cluster_id=None,
+        notebook_task={
+            "notebook_path": "/Workspace/Users/02_silver",
+        },
+        new_cluster={
+            "spark_version": "15.4.x-scala2.12",
+            "node_type_id": "Standard_DS3_v2",
+            "num_workers": 1,
+        },
+    )
+
+    run_gold = DatabricksSubmitRunOperator(
+        task_id="run_gold_notebook",
+        databricks_conn_id=DATABRICKS_CONN_ID,
+        existing_cluster_id=None,
+        notebook_task={
+            "notebook_path": "/Workspace/Users/03_gold",
+        },
+        new_cluster={
+            "spark_version": "15.4.x-scala2.12",
+            "node_type_id": "Standard_DS3_v2",
+            "num_workers": 1,
+        },
+    )
+
+    fetch_prices >> fetch_sentiment >> run_bronze >> run_silver >> run_gold
+
