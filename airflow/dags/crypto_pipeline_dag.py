@@ -34,42 +34,33 @@ with DAG(
     run_bronze = DatabricksSubmitRunOperator(
         task_id="run_bronze_notebook",
         databricks_conn_id=DATABRICKS_CONN_ID,
-        existing_cluster_id=None,
-        notebook_task={
-            "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/01_bronze_layer",
-        },
-        new_cluster={
-            "spark_version": "15.4.x-scala2.12",
-            "node_type_id": "Standard_DS3_v2",
-            "num_workers": 1,
+        json={
+            "run_name": "airflow_bronze",
+            "notebook_task": {
+                "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/01_bronze_layer",
+            },
         },
     )
 
     run_silver = DatabricksSubmitRunOperator(
         task_id="run_silver_notebook",
         databricks_conn_id=DATABRICKS_CONN_ID,
-        existing_cluster_id=None,
-        notebook_task={
-            "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/02_silver_layer",
-        },
-        new_cluster={
-            "spark_version": "15.4.x-scala2.12",
-            "node_type_id": "Standard_DS3_v2",
-            "num_workers": 1,
+        json={
+            "run_name": "airflow_silver",
+            "notebook_task": {
+                "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/02_silver_layer",
+            },
         },
     )
 
     run_gold = DatabricksSubmitRunOperator(
         task_id="run_gold_notebook",
         databricks_conn_id=DATABRICKS_CONN_ID,
-        existing_cluster_id=None,
-        notebook_task={
-            "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/03_gold_layer",
-        },
-        new_cluster={
-            "spark_version": "15.4.x-scala2.12",
-            "node_type_id": "Standard_DS3_v2",
-            "num_workers": 1,
+        json={
+            "run_name": "airflow_gold",
+            "notebook_task": {
+                "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/03_gold_layer",
+            },
         },
     )
 
