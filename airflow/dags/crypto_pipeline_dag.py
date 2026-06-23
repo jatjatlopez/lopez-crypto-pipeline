@@ -36,9 +36,14 @@ with DAG(
         databricks_conn_id=DATABRICKS_CONN_ID,
         json={
             "run_name": "airflow_bronze",
-            "notebook_task": {
-                "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/01_bronze_layer",
-            },
+            "tasks": [
+                {
+                    "task_key": "bronze",
+                    "notebook_task": {
+                        "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/01_bronze_layer",
+                    },
+                }
+            ],
         },
     )
 
@@ -47,9 +52,14 @@ with DAG(
         databricks_conn_id=DATABRICKS_CONN_ID,
         json={
             "run_name": "airflow_silver",
-            "notebook_task": {
-                "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/02_silver_layer",
-            },
+            "tasks": [
+                {
+                    "task_key": "silver",
+                    "notebook_task": {
+                        "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/02_silver_layer",
+                    },
+                }
+            ],
         },
     )
 
@@ -58,9 +68,14 @@ with DAG(
         databricks_conn_id=DATABRICKS_CONN_ID,
         json={
             "run_name": "airflow_gold",
-            "notebook_task": {
-                "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/03_gold_layer",
-            },
+            "tasks": [
+                {
+                    "task_key": "gold",
+                    "notebook_task": {
+                        "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/03_gold_layer",
+                    },
+                }
+            ],
         },
     )
 
