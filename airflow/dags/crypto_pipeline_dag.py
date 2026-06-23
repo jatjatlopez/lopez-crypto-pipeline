@@ -36,7 +36,7 @@ with DAG(
         databricks_conn_id=DATABRICKS_CONN_ID,
         existing_cluster_id=None,
         notebook_task={
-            "notebook_path": "/Workspace/Users/01_bronze",
+            "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/01_bronze_layer",
         },
         new_cluster={
             "spark_version": "15.4.x-scala2.12",
@@ -50,7 +50,7 @@ with DAG(
         databricks_conn_id=DATABRICKS_CONN_ID,
         existing_cluster_id=None,
         notebook_task={
-            "notebook_path": "/Workspace/Users/02_silver",
+            "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/02_silver_layer",
         },
         new_cluster={
             "spark_version": "15.4.x-scala2.12",
@@ -64,7 +64,7 @@ with DAG(
         databricks_conn_id=DATABRICKS_CONN_ID,
         existing_cluster_id=None,
         notebook_task={
-            "notebook_path": "/Workspace/Users/03_gold",
+            "notebook_path": "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/03_gold_layer",
         },
         new_cluster={
             "spark_version": "15.4.x-scala2.12",
