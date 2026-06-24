@@ -1,0 +1,56 @@
+name: Databricks Pipeline
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-notebooks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Databricks CLI
+        run: pip install databricks-sdk
+
+      - name: Run Bronze → Silver → Gold
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          python - <<'EOF'
+          import os
+          import time
+          from databricks.sdk import WorkspaceClient
+          from databricks.sdk.service.jobs import NotebookTask, Task, Source
+
+          client = WorkspaceClient(
+              host=os.environ["DATABRICKS_HOST"],
+              token=os.environ["DATABRICKS_TOKEN"]
+          )
+
+          notebooks = [
+              "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/01_bronze_layer",
+              "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/02_silver_layer",
+              "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/03_gold_layer",
+          ]
+
+          for path in notebooks:
+              print(f"Running {path}...")
+              run = client.jobs.submit(
+                  run_name=f"github-actions-{path.split('/')[-1]}",
+                  tasks=[
+                      Task(
+                          task_key="notebook",
+                          notebook_task=NotebookTask(notebook_path=path),
+                      )
+                  ],
+              ).result()
+              print(f"Done: {path}")
+          EOF
