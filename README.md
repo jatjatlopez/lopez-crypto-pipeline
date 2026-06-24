@@ -127,13 +127,7 @@ SQL-based transformations on top of Gold:
 | `ingest.yml` | Every hour | Fetches prices + sentiment → uploads to S3 |
 | `databricks.yml` | Every 4 hours | Triggers Bronze → Silver → Gold notebooks |
 
-![GitHub Actions](docs/screenshots/github_actions.png)
-*Both workflows running successfully in the cloud*
-
 ### Apache Airflow DAG
-
-![Airflow DAG](docs/screenshots/airflow_dag.png)
-*All 5 tasks green — full pipeline execution in under 5 minutes*
 
 The DAG (`crypto_pipeline`) runs:
 ```
@@ -143,9 +137,6 @@ fetch_prices → fetch_sentiment → run_bronze → run_silver → run_gold
 ---
 
 ## Databricks Pipeline
-
-![Databricks Pipeline](docs/screenshots/databricks_pipeline.png)
-*Gold layer notebook — joined fact table with sentiment + price data*
 
 Key technical decisions:
 - Used `boto3` instead of `spark.conf.set` for S3 access (Serverless compute restriction)
