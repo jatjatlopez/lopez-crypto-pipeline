@@ -132,9 +132,16 @@ def fetch_news(limit=20):
     url = "https://cryptocurrency.cv/api/news"
     params = {"limit": limit}  # max articles per request (keep modest)
 
-    response = requests.get(url, params=params, timeout=30)
-    response.raise_for_status()
-    return response.json()
+    try:
+        response = requests.get(url, params=params, timeout=60)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.Timeout:
+        print("WARNING: cryptocurrency.cv timed out — skipping news fetch")
+        return {"articles": [], "totalCount": 0}
+    except requests.exceptions.RequestException as e:
+        print(f"WARNING: cryptocurrency.cv error ({e}) — skipping news fetch")
+        return {"articles": [], "totalCount": 0}
 
 
 # ------------------------------------------------------------
