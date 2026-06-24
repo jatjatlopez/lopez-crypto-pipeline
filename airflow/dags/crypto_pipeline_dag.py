@@ -16,7 +16,7 @@ with DAG(
     description="Fetch crypto data, upload to S3, trigger Databricks lakehouse",
     default_args=default_args,
     start_date=datetime(2026, 6, 22),
-    schedule_interval="@hourly",
+    schedule_interval="0 */4 * * *",
     catchup=False,
     tags=["crypto", "ingestion", "databricks"],
 ) as dag:
