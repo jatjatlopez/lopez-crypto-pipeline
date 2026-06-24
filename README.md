@@ -21,17 +21,6 @@
 </div>
 
 ---
-
-## Dashboard Preview
-
-![Dashboard Top](docs/screenshots/dashboard_top.png)
-*Fear & Greed gauge, live coin prices with 24h stats*
-
-![Dashboard Charts](docs/screenshots/dashboard_charts.png)
-*Market cap distribution, sentiment correlation, volatility breakdown, leaderboard*
-
----
-
 ## Architecture
 
 ```
