@@ -68,7 +68,7 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │              STREAMLIT DASHBOARD (Deployed — Public URL)            │
 │  lopez-crypto-pipeline.streamlit.app                                │
-│  Fear & Greed Gauge · Live Prices · Charts · News Feed              │
+│  Fear & Greed Gauge · Live Prices · Trading View (OHLC/RSI/MACD) · News │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -227,6 +227,8 @@ echo 'DATABRICKS_TOKEN = "your-token"' > .streamlit/secrets.toml
 
 streamlit run app.py
 ```
+
+The dashboard includes a **Trading View** section with exchange-style candlestick charts (OHLC), volume, RSI (14), MACD (12/26/9), and toggleable EMA 9/21 overlays for BTC, ETH, SOL, XRP, and HYPE. Chart data is fetched on-demand from CoinGecko (optional `COINGECKO_API_KEY` in `secrets.toml` for higher rate limits).
 
 ### Airflow
 
