@@ -2,3 +2,4 @@ streamlit
 plotly
 pandas
 databricks-sql-connector
+requests
