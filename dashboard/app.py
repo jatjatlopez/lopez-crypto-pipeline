@@ -18,10 +18,15 @@ st.set_page_config(
 
 st.markdown(inject_styles(), unsafe_allow_html=True)
 
-DATABRICKS_HOST = "dbc-758c2345-970f.cloud.databricks.com"
-DATABRICKS_HTTP_PATH = "/sql/1.0/warehouses/67040879cf9bb833"
+DATABRICKS_HOST = st.secrets["DATABRICKS_HOST"]
+DATABRICKS_HTTP_PATH = st.secrets["DATABRICKS_HTTP_PATH"]
 DATABRICKS_TOKEN = st.secrets["DATABRICKS_TOKEN"]
+DATABRICKS_CATALOG = st.secrets.get("DATABRICKS_CATALOG", "workspace")
 COINGECKO_API_KEY = st.secrets.get("COINGECKO_API_KEY")
+
+
+def tbl(name: str) -> str:
+    return f"{DATABRICKS_CATALOG}.default.{name}"
 
 @st.cache_data(ttl=600)
 def get_chart_data(coin_id: str, timeframe: str, api_key: str | None):
@@ -52,19 +57,19 @@ def fmt_large(v):
     if v >= 1e6: return f"${v/1e6:.2f}M"
     return f"${v:,.0f}"
 
-df = get_data("SELECT * FROM workspace.default.gold_price_sentiment ORDER BY last_updated DESC")
+df = get_data(f"SELECT * FROM {tbl('gold_price_sentiment')} ORDER BY last_updated DESC")
 latest = df.sort_values("last_updated").drop_duplicates("coin_id", keep="last")
 coins_ordered = coins_by_mcap(latest, valid=set(COINS.keys()))
 
-fg_df = get_data("""
+fg_df = get_data(f"""
     SELECT DATE(last_updated) AS date, AVG(fear_greed_value) AS avg_fg, MAX(value_classification) AS classification
-    FROM workspace.default.gold_price_sentiment
+    FROM {tbl('gold_price_sentiment')}
     WHERE fear_greed_value IS NOT NULL
     GROUP BY DATE(last_updated) ORDER BY date ASC
 """)
 
-news_df = get_data("""
-    SELECT ingested_at, data FROM workspace.default.bronze_news
+news_df = get_data(f"""
+    SELECT ingested_at, data FROM {tbl('bronze_news')}
     ORDER BY ingested_at DESC LIMIT 10
 """)
 
@@ -85,9 +90,9 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── FEAR & GREED ROW ──────────────────────────────────────────────
-sent = get_data("""
+sent = get_data(f"""
     SELECT value_classification, ROUND(AVG(price_change_percentage_24h),2) AS avg_pct
-    FROM workspace.default.gold_price_sentiment
+    FROM {tbl('gold_price_sentiment')}
     WHERE value_classification IS NOT NULL
     GROUP BY value_classification ORDER BY avg_pct DESC
 """)
@@ -253,9 +258,9 @@ st.markdown(section_header("Trading View", "Exchange-style OHLC · RSI · MACD �
 
 mc = latest.sort_values("market_cap", ascending=False)
 top = latest.sort_values("price_change_percentage_24h", ascending=True)
-vol = get_data("""
+vol = get_data(f"""
     SELECT volatility_category, COUNT(*) AS count
-    FROM workspace.default.gold_price_sentiment
+    FROM {tbl('gold_price_sentiment')}
     WHERE volatility_category IS NOT NULL
     GROUP BY volatility_category
 """)
