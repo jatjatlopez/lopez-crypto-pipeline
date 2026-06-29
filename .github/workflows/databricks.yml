@@ -36,9 +36,9 @@ jobs:
           )
 
           notebooks = [
-              "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/01_bronze_layer",
-              "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/02_silver_layer",
-              "/Workspace/Users/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/03_gold_layer",
+              "/Repos/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/01_bronze_layer",
+              "/Repos/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/02_silver_layer",
+              "/Repos/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/03_gold_layer",
           ]
 
           for path in notebooks:
