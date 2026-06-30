@@ -16,13 +16,24 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-st.markdown(inject_styles(), unsafe_allow_html=True)
+_REQUIRED = ("DATABRICKS_HOST", "DATABRICKS_HTTP_PATH", "DATABRICKS_TOKEN")
+_missing = [key for key in _REQUIRED if key not in st.secrets]
+if _missing:
+    st.error(
+        "Missing Streamlit secrets: "
+        + ", ".join(_missing)
+        + ". In Streamlit Cloud go to Settings → Secrets and paste all keys from "
+        "dashboard/.streamlit/secrets.toml.example, then reboot the app."
+    )
+    st.stop()
 
 DATABRICKS_HOST = st.secrets["DATABRICKS_HOST"]
 DATABRICKS_HTTP_PATH = st.secrets["DATABRICKS_HTTP_PATH"]
 DATABRICKS_TOKEN = st.secrets["DATABRICKS_TOKEN"]
 DATABRICKS_CATALOG = st.secrets.get("DATABRICKS_CATALOG", "workspace")
 COINGECKO_API_KEY = st.secrets.get("COINGECKO_API_KEY")
+
+st.markdown(inject_styles(), unsafe_allow_html=True)
 
 
 def tbl(name: str) -> str:
