@@ -27,11 +27,11 @@ jobs:
           python - <<'EOF'
           import os
           from databricks.sdk import WorkspaceClient
+          from databricks.sdk.service.compute import Environment
           from databricks.sdk.service.jobs import (
               GitSource,
               GitProvider,
               JobEnvironment,
-              JobEnvironmentSpec,
               NotebookTask,
               Source,
               Task,
@@ -51,7 +51,7 @@ jobs:
           serverless_env = [
               JobEnvironment(
                   environment_key="default",
-                  spec=JobEnvironmentSpec(environment_version="3"),
+                  spec=Environment(environment_version="3"),
               )
           ]
 
