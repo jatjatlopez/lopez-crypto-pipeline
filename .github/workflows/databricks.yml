@@ -26,31 +26,58 @@ jobs:
         run: |
           python - <<'EOF'
           import os
-          import time
           from databricks.sdk import WorkspaceClient
-          from databricks.sdk.service.jobs import NotebookTask, Task, Source
+          from databricks.sdk.service.jobs import (
+              GitSource,
+              GitProvider,
+              JobEnvironment,
+              JobEnvironmentSpec,
+              NotebookTask,
+              Source,
+              Task,
+          )
 
           client = WorkspaceClient(
               host=os.environ["DATABRICKS_HOST"],
-              token=os.environ["DATABRICKS_TOKEN"]
+              token=os.environ["DATABRICKS_TOKEN"],
           )
 
+          git_source = GitSource(
+              git_url="https://github.com/jatjatlopez/lopez-crypto-pipeline.git",
+              git_provider=GitProvider.GIT_HUB,
+              git_branch="main",
+          )
+
+          serverless_env = [
+              JobEnvironment(
+                  environment_key="default",
+                  spec=JobEnvironmentSpec(environment_version="3"),
+              )
+          ]
+
           notebooks = [
-              "/Repos/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/01_bronze_layer",
-              "/Repos/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/02_silver_layer",
-              "/Repos/lopezjatjat10@gmail.com/lopez-crypto-pipeline/notebooks/03_gold_layer",
+              "notebooks/01_bronze_layer",
+              "notebooks/02_silver_layer",
+              "notebooks/03_gold_layer",
           ]
 
           for path in notebooks:
               print(f"Running {path}...")
               run = client.jobs.submit(
                   run_name=f"github-actions-{path.split('/')[-1]}",
+                  git_source=git_source,
+                  environments=serverless_env,
                   tasks=[
                       Task(
                           task_key="notebook",
-                          notebook_task=NotebookTask(notebook_path=path),
+                          environment_key="default",
+                          notebook_task=NotebookTask(
+                              notebook_path=path,
+                              source=Source.GIT,
+                          ),
                       )
                   ],
               ).result()
-              print(f"Done: {path}")
+              state = run.state.life_cycle_state if run.state else "unknown"
+              print(f"Done: {path} ({state})")
           EOF
